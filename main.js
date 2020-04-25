@@ -1,4 +1,4 @@
-const API_KEY = "YOUR_API_KEY";
+const API_KEY = "effe9ef88296459d9e6074ad03d08e3d";
 const url = "https://api.rebrandly.com/v1/links";
 
 const inputField = document.querySelector(".input");
@@ -8,20 +8,30 @@ const responseField = document.querySelector(".response");
 const shortenUrl = () => {
   const urlToShorten = inputField.value;
   const data = JSON.stringify({ destination: urlToShorten });
-  const xhr = new XMLHttpRequest();
-  xhr.responseType = "json";
-  xhr.onreadystatechange = () => {
-    xhr.readyState === XMLHttpRequest.DONE
-      ? renderResponse(xhr.response)
-      : null;
-  };
-  xhr.open("POST", url);
 
-  //access to the Rebrandly API
-  xhr.setRequestHeader("Content-type", "application/json");
-  xhr.setRequestHeader("apikey", API_KEY);
-
-  xhr.send(data);
+  fetch(url, {
+    method: "POST",
+    //access to the Rebrandly API
+    headers: {
+      "Content-type": "application/json",
+      'apikey': API_KEY
+    },
+    body: data
+  })
+    .then(
+      (res) => {
+        if (res.ok) {
+          return res.json();
+        }
+        throw new Error("Request failed.");
+      },
+      (networkError) => {
+        console.log(networkError.message);
+      }
+    )
+    .then((jsonResponse) => {
+      renderResponse(jsonResponse);
+    });
 };
 
 // Clear page and call AJAX functions
